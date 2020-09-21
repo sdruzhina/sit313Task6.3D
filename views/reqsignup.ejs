@@ -1,0 +1,248 @@
+<!--
+=========================================================
+* Argon Dashboard - v1.2.0
+=========================================================
+* Product Page: https://www.creative-tim.com/product/argon-dashboard
+
+* Copyright  Creative Tim (http://www.creative-tim.com)
+* Coded by www.creative-tim.com
+=========================================================
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="iCrowdTask Registration">
+  <title>iCrowdTask Registration</title>
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
+  <!-- Argon CSS -->
+  <link rel="stylesheet" href="/css/argon.css">
+</head>
+
+<body class="bg-default">
+  <!-- Navbar -->
+  <nav id="navbar-main" class="navbar navbar-horizontal navbar-transparent navbar-main navbar-expand-lg navbar-light">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <h2 style="color: white">iCrowdTask</h2>
+      </a>
+    </div>
+  </nav>
+  <!-- Main content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header bg-gradient-primary py-7">
+      <div class="container">
+        <div class="header-body text-center mb-7">
+          <div class="row justify-content-center">
+            <div class="col-xl-5 col-lg-6 col-md-8 px-5">
+              <h1 class="text-white">Requester Registration</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="separator separator-bottom separator-skew zindex-100">
+        <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <polygon class="fill-default" points="2560 0 2560 100 0 100"></polygon>
+        </svg>
+      </div>
+    </div>
+    <!-- Page content -->
+    <div class="container mt--8 pb-5">
+      <!-- Table -->
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+          <div class="card bg-secondary border-0">
+            <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                <h4>Create an iCrowdTask account</h4>
+              </div>
+              <form action="/reqsignup" method="post" role="form">
+                <div class="form-group">
+                  <label class="text-sm text-muted" for="country">Country of residence*</label>
+                  <div class="input-group input-group-merge input-group-alternative mb-3">
+                    <select class="form-control" name="country" id="country" onchange="setCountry(this.value)">
+                      <option <%= data && data.country ? '' : 'selected' %> disabled>- Please select</option>
+                      <option value="AU" <%= data && data.country == 'AU' ? 'selected' : '' %> >Australia</option>
+                      <option value="O" <%= data && data.country == 'O' ? 'selected' : '' %> >Other</option>
+                    </select>
+                  </div>
+                  <%if (err.errors && err.errors['country']) { %>
+                    <div class="text-red text-sm" style="margin-top: -10px;"><%= err.errors['country'] %></div>
+                  <% } %>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label class="text-sm text-muted" for="firstName">First Name*</label>
+                      <div class="input-group input-group-merge input-group-alternative mb-3">
+                        <input class="form-control" name="firstName" id="firstName" type="text" value="<%= data ? data.firstName : '' %>">
+                      </div>
+                      <%if (err.errors && err.errors['firstName']) { %>
+                        <div class="text-red text-sm" style="margin-top: -10px;"><%= err.errors['firstName'] %></div>
+                      <% } %>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-group">
+                      <label class="text-sm text-muted" for="lastName">Last Name*</label>
+                      <div class="input-group input-group-merge input-group-alternative mb-3">
+                        <input class="form-control" name="lastName" id="lastName" type="text" value="<%= data ? data.lastName : '' %>">
+                      </div>
+                      <%if (err.errors && err.errors['lastName']) { %>
+                        <div class="text-red text-sm" style="margin-top: -10px;"><%= err.errors['lastName'] %></div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="text-sm text-muted" for="email">Email*</label>
+                  <div class="input-group input-group-merge input-group-alternative mb-3">
+                    <input class="form-control" name="email" id="email" type="email" value="<%= data ? data.email : '' %>">
+                  </div>
+                  <%if (err.errors && err.errors['email']) { %>
+                    <div class="text-red text-sm" style="margin-top: -10px;"><%= err.errors['email'] %></div>
+                  <% } %>
+                </div>
+                <div class="form-group">
+                  <label class="text-sm text-muted" for="password">Password*</label>
+                  <div class="input-group input-group-merge input-group-alternative">
+                    <input class="form-control" name="password" id="password" type="password">
+                  </div>
+                  <%if (err.errors && err.errors['password']) { %>
+                    <div class="text-red text-sm"><%= err.errors['password'] %></div>
+                  <% } %>
+                </div>
+                <div class="form-group">
+                  <label class="text-sm text-muted" for="passwordConfirm">Confirm Password*</label>
+                  <div class="input-group input-group-merge input-group-alternative">
+                    <input class="form-control" name="passwordConfirm" id="passwordConfirm" type="password">
+                  </div>
+                  <%if (err.errors && err.errors['passwordConfirm']) { %>
+                    <div class="text-red text-sm"><%= err.errors['passwordConfirm'] %></div>
+                  <% } %>
+                </div>
+                <div class="form-group">
+                  <label class="text-sm text-muted" for="address1">Address*</label>
+                  <div class="input-group input-group-merge input-group-alternative">
+                    <input class="form-control" name="address1" id="address1" type="text" value="<%= data ? data.address1 : '' %>">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group input-group-merge input-group-alternative">
+                    <input class="form-control" name="address2" id="address2" type="text" value="<%= data ? data.address2 : '' %>">
+                  </div>
+                  <%if (err.errors && err.errors['address1']) { %>
+                    <div class="text-red text-sm"><%= err.errors['address1'] %></div>
+                  <% } %>
+                </div>
+                <div class="form-group">
+                  <label class="text-sm text-muted" for="city">City*</label>
+                  <div class="input-group input-group-merge input-group-alternative mb-3">
+                    <input class="form-control" name="city" id="city" type="text" value="<%= data ? data.city : '' %>">
+                  </div>
+                  <%if (err.errors && err.errors['city']) { %>
+                    <div class="text-red text-sm" style="margin-top: -10px;"><%= err.errors['city'] %></div>
+                  <% } %>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label class="text-sm text-muted" for="state">State*</label>
+                      <div class="input-group input-group-merge input-group-alternative mb-3">
+                        <select class="form-control" name="state" id="state">
+                          <option <%= data && data.state ? '' : 'selected' %> disabled>- Please select</option>
+                          <option value="ACT" <%= data && data.state == 'ACT' ? 'selected' : '' %> >ACT</option>
+                          <option value="NSW" <%= data && data.state == 'NSW' ? 'selected' : '' %> >NSW</option>
+                          <option value="NT" <%= data && data.state == 'NT' ? 'selected' : '' %> >NT</option>
+                          <option value="QLD" <%= data && data.state == 'QLD' ? 'selected' : '' %> >QLD</option>
+                          <option value="SA" <%= data && data.state == 'SA' ? 'selected' : '' %> >SA</option>
+                          <option value="TAS" <%= data && data.state == 'TAS' ? 'selected' : '' %> >TAS</option>
+                          <option value="VIC" <%= data && data.state == 'VIC' ? 'selected' : '' %> >VIC</option>
+                          <option value="WA" <%= data && data.state == 'WA' ? 'selected' : '' %> >WA</option>
+                        </select>                      
+                      </div>
+                      <%if (err.errors && err.errors['state']) { %>
+                        <div class="text-red text-sm" style="margin-top: -10px;"><%= err.errors['state'] %></div>
+                      <% } %>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-group">
+                      <label class="text-sm text-muted" for="postcode">Postcode</label>
+                      <div class="input-group input-group-merge input-group-alternative mb-3">
+                        <input class="form-control" name="postcode" id="postcode" type="text" pattern="[0-9]{4}" title="Four digits"
+                          value="<%= data ? data.postcode : '' %>">
+                      </div>
+                      <%if (err.errors && err.errors['postcode']) { %>
+                        <div class="text-red text-sm" style="margin-top: -10px;"><%= err.errors['postcode'] %></div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="text-sm text-muted" for="mobile">Mobile Phone Number</label>
+                  <div class="input-group input-group-merge input-group-alternative mb-3">
+                    <input class="form-control" name="mobile" id="mobile" type="text" value="<%= data ? data.mobile : '' %>">
+                  </div>
+                  <%if (err.errors && err.errors['mobile']) { %>
+                    <div class="text-red text-sm" style="margin-top: -10px;"><%= err.errors['mobile'] %></div>
+                  <% } %>
+                </div>
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary mt-4">Create account</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-6">
+            </div>
+            <div class="col-6 text-right">
+              <a href="/" class="text-light"><small>Have an account? Sign in</small></a>
+            </div>
+            <%if (err) { %>
+              <div class="text-red text-sm" style="margin-top: -10px;"><%= err %></div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Footer -->
+  <footer class="py-5" id="footer-main">
+    <div class="container">
+      <div class="row align-items-center justify-content-xl-between">
+        <div class="col-xl-6">
+          <div class="copyright text-center text-xl-left text-muted">
+            &copy; 2020 <a href="/" class="font-weight-bold ml-1">iCrowdTask</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- Argon Scripts -->
+  <!-- Core -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+  <script>
+    function setCountry(value) {
+      const el = document.querySelector('#state');
+      if (value === 'O') {
+        el.disabled = true;
+      }
+      else {
+        el.disabled = false;
+      }
+    }
+
+  </script>
+</body>
+
+</html>
