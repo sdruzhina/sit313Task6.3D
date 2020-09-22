@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const passportLocalMongoose = require('passport-local-mongoose');
 
 // Bcrypt
 const bcrypt = require('bcrypt');
@@ -17,7 +18,7 @@ const workerSchema = new mongoose.Schema(
         },
         lastName: {
             type: String,
-            required: t[true, 'This field is required']
+            required: [true, 'This field is required']
         },
         email: {
             type: String,
@@ -30,13 +31,13 @@ const workerSchema = new mongoose.Schema(
                 }
             }
         },
-        password: {
-            type: String,
-            required: [true, 'This field is required'],
-            trim: true,
-            minlength: 6,
-            maxlength: 30
-        },
+        // password: {
+        //     type: String,
+        //     required: [true, 'This field is required'],
+        //     trim: true,
+        //     minlength: 6,
+        //     maxlength: 30
+        // },
         address1: {
             type: String,
             required: [true, 'This field is required'],
@@ -75,28 +76,31 @@ const workerSchema = new mongoose.Schema(
 )
 
 
-workerSchema.virtual('passwordConfirm')
-.get(function() {
-  return this._passwordConfirm;
-})
-.set(function(value) {
-  this._passwordConfirm = value;
-});
+// Add the Passport local plugin
+workerSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
 
-// Check that the password matches password confirmation
-workerSchema.path('password').validate(function(v) {
-    if (this.password !== this.passwordConfirm) {
-        this.invalidate('passwordConfirm', 'Passwords must match.');
-    }
-}, null);
+// workerSchema.virtual('passwordConfirm')
+// .get(function() {
+//   return this._passwordConfirm;
+// })
+// .set(function(value) {
+//   this._passwordConfirm = value;
+// });
 
-// Use Bcrypt to hash the password
-workerSchema.pre("save", function(next) {
-    if(!this.isModified("password")) {
-        return next();
-    }
-    this.password = bcrypt.hashSync(this.password, SALT_ROUNDS);
-    next();
-});
+// // Check that the password matches password confirmation
+// workerSchema.path('password').validate(function(v) {
+//     if (this.password !== this.passwordConfirm) {
+//         this.invalidate('passwordConfirm', 'Passwords must match.');
+//     }
+// }, null);
+
+// // Use Bcrypt to hash the password
+// workerSchema.pre("save", function(next) {
+//     if(!this.isModified("password")) {
+//         return next();
+//     }
+//     this.password = bcrypt.hashSync(this.password, SALT_ROUNDS);
+//     next();
+// });
 
 module.exports  =  mongoose.model("Worker", workerSchema)

@@ -206,7 +206,7 @@
               <a href="/" class="text-light"><small>Have an account? Sign in</small></a>
             </div>
             <%if (err) { %>
-              <div class="text-red text-sm" style="margin-top: -10px;"><%= err %></div>
+              <div class="text-red text-sm" style="margin-top: -10px;"><%= JSON.stringify(err) %></div>
             <% } %>
           </div>
         </div>

@@ -1,9 +1,13 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const Requester = require("./models/Requester");
-const mongoose = require("mongoose");
-const validator = require("validator");
-const workerApi = require("./api/worker-api");
+const express = require('express');
+const bodyParser = require('body-parser');
+const Requester = require('./models/Requester');
+const Worker = require('./models/Worker');
+const mongoose = require('mongoose');
+const workerApi = require('./api/worker-api');
+const passport = require('passport')
+const passportLocalMongoose = require('passport-local-mongoose');
+const passportGoogle = require('passport-google-oauth');
+const session = require('express-session')
 const mail = require('./mail');
 
 // Bcrypt
@@ -14,11 +18,33 @@ const app = express()
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(express.static("public"));
+app.use(express.static('public'));
 app.use(workerApi);
+app.use(session({
+    secret : 'Deakin2020',
+    resave: false,
+    saveUninitialized: false, 
+    cookie: { maxAge: 120000 }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
-mongoose.connect("mongodb+srv://sergei:Deakin2020@cluster0.t3ayv.mongodb.net/iCrowdTaskDB?retryWrites=true&w=majority", 
+// MongoDB connection
+mongoose.connect('mongodb+srv://sergei:Deakin2020@cluster0.t3ayv.mongodb.net/iCrowdTaskDB?retryWrites=true&w=majority', 
     {useNewUrlParser: true, useUnifiedTopology: true})
+
+// Initialise Passport strategies for requesters and workers
+passport.use(Requester.createStrategy())
+passport.serializeUser(Requester.serializeUser())
+passport.deserializeUser(Requester.deserializeUser())
+
+// passport.use(Worker.createStrategy())
+// passport.serializeUser(Worker.serializeUser())
+// passport.deserializeUser(Worker.deserializeUser())
+
+/**
+ * Routes
+ */
 
 // Entry point - login page
 app.get('/', (req, res) => {
@@ -65,38 +91,54 @@ app.get('/reqsignup', (req, res) => {
 
 // Signup form
 app.post('/reqsignup', (req, res) => {
-    const requester = new Requester({
+    if (req.body.password !== req.body.passwordConfirm) {
+        res.render('reqsignup.ejs', { err: { errors: {passwordConfirm: 'Passwords must match.'}}, data: req.body })
+    }
+    Requester.register(new Requester({
         country: req.body.country,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
-        password: req.body.password,
-        passwordConfirm: req.body.passwordConfirm,
         address1: req.body.address1,
         address2: req.body.address2,
         city: req.body.city,
         state: req.body.state,
         postcode: req.body.postcode,
-        mobile: req.body.mobile
-    });
+        mobile: req.body.mobile,
+    }), req.body.password, (err, requester) => {
+        if (err) {
+            console.log(err)
+            res.render('reqsignup.ejs', { err: err, data: req.body })
+        }
+        else {
+            passport.authenticate('local')(req, res, () => {
+                res.redirect('/reqtask');
+            });
+        }
+    })
 
-    requester.save()
-        .catch((err) => res.render('reqsignup.ejs', { err: err, data: requester }));
+    // requester.save()
+    //     .catch((err) => res.render('reqsignup.ejs', { err: err, data: requester }));
 
-    // SUbscribe the user to mailing list and send the welcome email (set up in Mailchimp)
-    mail.subscribe(req.body.firstName, req.body.lastName, req.body.email);
+    // // Subscribe the user to mailing list and send the welcome email (set up in Mailchimp)
+    // mail.subscribe(req.body.firstName, req.body.lastName, req.body.email);
 
-    if (res.statusCode === 200) {
-        res.sendFile(__dirname + '/reqtask.html');
-    }
-    else {
-        res.sendFile(__dirname + '/404.html');
-    }
+    // if (res.statusCode === 200) {
+    //     res.sendFile(__dirname + '/reqtask.html');
+    // }
+    // else {
+    //     res.sendFile(__dirname + '/404.html');
+    // }
 });
 
 // Tasks page
 app.get('/reqtask', (req, res) => {
-    res.sendFile(__dirname + '/reqtask.html');
+    if (req.isAuthenticated()) {
+        res.sendFile(__dirname + '/reqtask.html');
+    }
+    else {
+        res.redirect('/');
+    }
 })
 
 let port = process.env.PORT;
