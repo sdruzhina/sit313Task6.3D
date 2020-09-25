@@ -58,18 +58,13 @@ app.post('/', async function (req, res) {
         errors.password = 'Please enter your password';
     }
     else {
-        // Get the user from DB
+        // // Get the user from DB
         const requester = await Requester.findOne({ email: req.body.email.trim() }, 'email password').exec();
             if (requester) {
-                // Compare password hash from DB
-                const match = await bcrypt.compare(req.body.password, requester.password);
-                if (match) {
-                    res.redirect('/reqtask');
-                    res.end();
-                }
-                else {
-                    errors.user = 'Invalid email or password';
-                }
+                req.login(requester, function(err) {
+                    if (err) { return next(err); }
+                    return res.redirect('/reqtask');
+                });
             }
             else {
                 // No record found
