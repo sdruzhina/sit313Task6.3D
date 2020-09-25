@@ -38,9 +38,6 @@ passport.use(Requester.createStrategy())
 passport.serializeUser(Requester.serializeUser())
 passport.deserializeUser(Requester.deserializeUser())
 
-// passport.use(Worker.createStrategy())
-// passport.serializeUser(Worker.serializeUser())
-// passport.deserializeUser(Worker.deserializeUser())
 
 /**
  * Routes
@@ -116,19 +113,12 @@ app.post('/reqsignup', (req, res) => {
             });
         }
     })
+});
 
-    // requester.save()
-    //     .catch((err) => res.render('reqsignup.ejs', { err: err, data: requester }));
-
-    // // Subscribe the user to mailing list and send the welcome email (set up in Mailchimp)
-    // mail.subscribe(req.body.firstName, req.body.lastName, req.body.email);
-
-    // if (res.statusCode === 200) {
-    //     res.sendFile(__dirname + '/reqtask.html');
-    // }
-    // else {
-    //     res.sendFile(__dirname + '/404.html');
-    // }
+// Logout
+app.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/');
 });
 
 // Tasks page
