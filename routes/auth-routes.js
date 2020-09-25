@@ -18,5 +18,10 @@ router.get('/google', passport.authenticate('google', {
     scope: ['profile']
 }));
 
+// Callback for Boogle uth redirect
+router.get('/google/redirect', (req, res) => {
+    res.send('Response received');
+})
+
 
 module.exports = router;
