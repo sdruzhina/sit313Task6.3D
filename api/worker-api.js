@@ -1,5 +1,5 @@
-var express  = require('express');
-var router = express.Router();
+const express  = require('express');
+const router = express.Router();
 const https = require("https");
 const bodyParser = require("body-parser");
 const Worker = require("../models/Worker");
