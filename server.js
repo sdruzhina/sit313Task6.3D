@@ -3,15 +3,16 @@ const bodyParser = require('body-parser');
 const Requester = require('./models/Requester');
 const Worker = require('./models/Worker');
 const mongoose = require('mongoose');
-const workerApi = require('./api/worker-api');
+const passportSetup = require('./config/passport-config');
 const passport = require('passport')
 const passportLocalMongoose = require('passport-local-mongoose');
 const passportGoogle = require('passport-google-oauth');
 const session = require('express-session')
 const mail = require('./mail');
 
-// Bcrypt
-const bcrypt = require('bcrypt');
+// Routes and API
+const workerApi = require('./api/worker-api');
+const authRoutes = require('./routes/auth-routes');
 
 const app = express()
 // set the view engine to ejs
@@ -19,7 +20,6 @@ app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static('public'));
-app.use(workerApi);
 app.use(session({
     secret : 'Deakin2020',
     resave: false,
@@ -28,6 +28,10 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Set up routes and API
+app.use(workerApi);
+app.use('/auth', authRoutes);
 
 // MongoDB connection
 mongoose.connect('mongodb+srv://sergei:Deakin2020@cluster0.t3ayv.mongodb.net/iCrowdTaskDB?retryWrites=true&w=majority', 
@@ -45,7 +49,7 @@ passport.deserializeUser(Requester.deserializeUser())
 
 // Entry point - login page
 app.get('/', (req, res) => {
-    res.render('reqlogin.ejs', { err: [], email: null });
+    res.redirect('/auth/login');
 })
 
 // Requester login form
