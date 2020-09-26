@@ -106,8 +106,8 @@ app.post('/reqsignup', (req, res) => {
         mobile: req.body.mobile,
     }), req.body.password, (err, requester) => {
         if (err) {
-            console.log(err)
-            res.render('reqsignup.ejs', { err: err, data: req.body })
+            console.log(err);
+            res.render('reqsignup.ejs', { err: err, data: req.body });
         }
         else {
             passport.authenticate('local')(req, res, () => {
@@ -126,7 +126,7 @@ app.get('/logout', function(req, res){
 // Tasks page
 app.get('/reqtask', (req, res) => {
     if (req.isAuthenticated()) {
-        res.sendFile(__dirname + '/reqtask.html');
+        res.render('reqtask.ejs', { user: req.user })
     }
     else {
         res.redirect('/');
