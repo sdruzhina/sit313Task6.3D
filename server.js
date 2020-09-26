@@ -13,6 +13,7 @@ const mail = require('./mail');
 // Routes and API
 const workerApi = require('./api/worker-api');
 const authRoutes = require('./routes/auth-routes');
+const config = require('./config');
 
 const app = express()
 // set the view engine to ejs
@@ -34,7 +35,7 @@ app.use(workerApi);
 app.use('/auth', authRoutes);
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://sergei:Deakin2020@cluster0.t3ayv.mongodb.net/iCrowdTaskDB?retryWrites=true&w=majority', 
+mongoose.connect(config.mongoDB.uri, 
     {useNewUrlParser: true, useUnifiedTopology: true})
 
 // Initialise Passport strategies for requesters and workers
@@ -62,7 +63,7 @@ app.post('/', async function (req, res) {
         errors.password = 'Please enter your password';
     }
     else {
-        // // Get the user from DB
+        // Get the user from DB
         const requester = await Requester.findOne({ email: req.body.email.trim() }, 'email password').exec();
             if (requester) {
                 req.login(requester, function(err) {

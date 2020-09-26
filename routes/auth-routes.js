@@ -15,11 +15,11 @@ router.get('/logout', (req, res) => {
 
 // Google OAuth
 router.get('/google', passport.authenticate('google', {
-    scope: ['profile']
+    scope: ['profile', 'email']
 }));
 
-// Callback for Boogle uth redirect
-router.get('/google/redirect', (req, res) => {
+// Callback for Google auth redirect
+router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
     res.send('Response received');
 })
 

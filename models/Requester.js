@@ -8,9 +8,13 @@ const SALT_ROUNDS = 10;
 
 const requesterSchema = new mongoose.Schema(
     {
+        googleId: {
+            type: String,
+            required: false
+        },
         country: {
             type: String,
-            required: [true, 'This field is required']
+            required: false
         },
         firstName: {
             type: String,
@@ -40,18 +44,18 @@ const requesterSchema = new mongoose.Schema(
         // },
         address1: {
             type: String,
-            required: [true, 'This field is required'],
+            required: false,
             trim: true
         },
         address2: String,
         city: {
             type: String,
             trim: true,
-            required: [true, 'This field is required']
+            required: false
         },
         state: {
             type: String,
-            required: [true, 'This field is required'],
+            required: false,
             validate: [
                 function (value) {
                     const states = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'];
