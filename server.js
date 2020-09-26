@@ -21,11 +21,13 @@ app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static('public'));
+
+// Session and Passport
 app.use(session({
     secret : 'Deakin2020',
     resave: false,
     saveUninitialized: false, 
-    cookie: { maxAge: 120000 }
+    cookie: { maxAge: 480000 }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -38,7 +40,7 @@ app.use('/auth', authRoutes);
 mongoose.connect(config.mongoDB.uri, 
     {useNewUrlParser: true, useUnifiedTopology: true})
 
-// Initialise Passport strategies for requesters and workers
+// Initialise Passport strategies for requesters
 passport.use(Requester.createStrategy())
 passport.serializeUser(Requester.serializeUser())
 passport.deserializeUser(Requester.deserializeUser())
