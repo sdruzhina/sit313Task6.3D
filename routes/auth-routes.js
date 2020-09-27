@@ -122,13 +122,50 @@ router.post('/forgot', async function (req, res) {
     });
 
     // Password reset URL using user ID and token
-    const url = `http://localhost:3000/auth/reset/${userId}/${token}`;
+    const url = `http://localhost:8080/auth/reset/${userId}/${token}`;
 
     // Send the email
     mail.sendPasswordReset(requester.email, requester.firstName, url);
 
     // Render the page with a confirmatio message
     res.render('forgot-password', { sent: true });
+});
+
+// Change Password form
+router.get('/reset/:userId/:token', (req, res) => {
+    res.render('change-password', { err: null, id: req.params.userId, token: req.params.token });
+});
+
+// Change Password POST request
+router.post('/reset/:userId/:token', async function (req, res) {
+    if (req.body.password !== req.body.passwordConfirm) {
+        res.render('change-password', { err: {message: 'Passwords do not match.'} });
+    }
+
+    // Find the user and compare tokens
+    let requester;
+    try {
+        requester = await Requester.findOne({ _id: req.params.userId }).exec()
+    } 
+    catch (err) {
+        res.status(404).json('Invalid user.')
+    }
+    if (requester) {
+        const secret = requester.hash + '-' + requester.createdAt;
+        const payload = jwt.decode(req.params.token, secret);
+        if (payload.userId === requester.id) {
+            
+            // Set new password 
+            await requester.setPassword(req.body.password);
+            await requester.save();
+
+            // Login and redirect to tasks page
+            req.login(requester, function(err) {
+                if (err) { return next(err); }
+                return res.redirect('/reqtask');
+            });
+        }
+    }
 });
 
 module.exports = router;
