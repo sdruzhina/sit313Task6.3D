@@ -2,10 +2,6 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const passportLocalMongoose = require('passport-local-mongoose');
 
-// Bcrypt
-const bcrypt = require('bcrypt');
-const SALT_ROUNDS = 10;
-
 const requesterSchema = new mongoose.Schema(
     {
         googleId: {
@@ -35,13 +31,6 @@ const requesterSchema = new mongoose.Schema(
                 }
             }
         },
-        // password: {
-        //     type: String,
-        //     required: [true, 'This field is required'],
-        //     trim: true,
-        //     minlength: 6,
-        //     maxlength: 30
-        // },
         address1: {
             type: String,
             required: false,
@@ -81,29 +70,5 @@ const requesterSchema = new mongoose.Schema(
 
 // Add the Passport local plugin
 requesterSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
-
-// requesterSchema.virtual('passwordConfirm')
-// .get(function() {
-//   return this._passwordConfirm;
-// })
-// .set(function(value) {
-//   this._passwordConfirm = value;
-// });
-
-// Check that the password matches password confirmation
-// requesterSchema.path('password').validate(function(v) {
-//     if (this.password !== this.passwordConfirm) {
-//         this.invalidate('passwordConfirm', 'Passwords must match.');
-//     }
-// }, null);
-
-// Use Bcrypt to hash the password
-// requesterSchema.pre("save", function(next) {
-//     if(!this.isModified("password")) {
-//         return next();
-//     }
-//     this.password = bcrypt.hashSync(this.password, SALT_ROUNDS);
-//     next();
-// });
 
 module.exports  =  mongoose.model("Requester", requesterSchema)
