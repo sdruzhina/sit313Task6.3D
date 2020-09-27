@@ -22,6 +22,14 @@ router.post('/login', async function (req, res) {
         // Get the user from DB
         const requester = await Requester.findOne({ email: req.body.email.trim() }, 'email password').exec();
             if (requester) {
+                // Check the "Save password" flag and save session to Mongo
+                if ( req.body.savePassword ) {
+                    // Set cookie to expire in 1 day
+                    req.session.cookie.originalMaxAge = 24 * 60 * 60 * 1000 
+                } 
+                else {
+                    req.session.cookie.expires = false
+                }
                 req.login(requester, function(err) {
                     if (err) { return next(err); }
                     return res.redirect('/reqtask');
