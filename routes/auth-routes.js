@@ -1,7 +1,9 @@
 const express  = require('express');
 const router = express.Router();
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const Requester = require('../models/Requester');
+const mail = require('../mail');
 
 
 // Login Form
@@ -66,6 +68,7 @@ router.post('/reqsignup', (req, res) => {
         state: req.body.state,
         postcode: req.body.postcode,
         mobile: req.body.mobile,
+        createdAt: Date.now()
     }), req.body.password, (err, requester) => {
         if (err) {
             console.log(err);
@@ -93,6 +96,39 @@ router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
 router.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
+});
+
+// Password reset form
+router.get('/forgot', (req, res) => {
+    res.render('forgot-password', { sent: false });
+});
+
+// Password Reset POST request
+router.post('/forgot', async function (req, res) {
+    // Get the email and check if user exists
+    const email = req.body.email.trim();
+    let requester;
+    try {
+        requester = await Requester.findOne({ email }).exec()
+    } catch (err) {
+        res.status(404).json('This email is not registered.')
+    }
+
+    // Create a JWT token using the old password and createdAt as hash
+    const userId = requester._id;
+    const secret = requester.hash + '-' + requester.createdAt;
+    const token = jwt.sign({ userId }, secret, {
+        expiresIn: 1800 // 30 minutes
+    });
+
+    // Password reset URL using user ID and token
+    const url = `http://localhost:3000/auth/reset/${userId}/${token}`;
+
+    // Send the email
+    mail.sendPasswordReset(requester.email, requester.firstName, url);
+
+    // Render the page with a confirmatio message
+    res.render('forgot-password', { sent: true });
 });
 
 module.exports = router;

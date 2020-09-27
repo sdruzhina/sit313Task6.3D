@@ -9,7 +9,6 @@ const passportLocalMongoose = require('passport-local-mongoose');
 const passportGoogle = require('passport-google-oauth');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
-const mail = require('./mail');
 
 // Routes and API
 const workerApi = require('./api/worker-api');

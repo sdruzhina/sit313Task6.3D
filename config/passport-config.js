@@ -32,6 +32,7 @@ passport.use(
                     firstName: profile._json.given_name,
                     lastName: profile._json.family_name,
                     email: profile.emails[0].value,
+                    createdAt: Date.now()
                 }).save()
                 .then((newRequester) => {
                     console.log('User added: ' + newRequester);
