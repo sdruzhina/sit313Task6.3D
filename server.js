@@ -117,12 +117,6 @@ app.post('/reqsignup', (req, res) => {
     })
 });
 
-// Logout
-app.get('/logout', function(req, res){
-    req.logout();
-    res.redirect('/');
-});
-
 // Tasks page
 app.get('/reqtask', (req, res) => {
     if (req.isAuthenticated()) {

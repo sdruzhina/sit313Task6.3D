@@ -9,8 +9,8 @@ router.get('/login', (req, res) => {
 
 // Logout
 router.get('/logout', (req, res) => {
-    // TODO - handle
-    res.send('Logging iout');
+    req.logout();
+    res.redirect('/');
 });
 
 // Google OAuth
