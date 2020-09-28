@@ -1,3 +1,4 @@
+const config = require('../config');
 const express  = require('express');
 const router = express.Router();
 const passport = require('passport');
@@ -110,61 +111,82 @@ router.post('/forgot', async function (req, res) {
     let requester;
     try {
         requester = await Requester.findOne({ email }).exec()
-    } catch (err) {
+    } 
+    catch (err) {
         res.status(404).json('This email is not registered.')
     }
 
-    // Create a JWT token using the old password and createdAt as hash
+    // Create a JWT token using the constant secret
     const userId = requester._id;
-    const secret = requester.hash + '-' + requester.createdAt;
-    const token = jwt.sign({ userId }, secret, {
+    const token = jwt.sign({ userId }, config.keys.jwtSecret, {
         expiresIn: 1800 // 30 minutes
     });
 
+    // Save the token to user's DB record
+    requester.updateOne({ resetToken: token }, (err, successs) => {
+        if (err) {
+            res.status(404).json('Error saving token.')
+        }
+    });
+
     // Password reset URL using user ID and token
-    const url = `http://localhost:8080/auth/reset/${userId}/${token}`;
+    const url = `http://localhost:8080/auth/reset/${token}`;
 
     // Send the email
     mail.sendPasswordReset(requester.email, requester.firstName, url);
 
-    // Render the page with a confirmatio message
+    // Render the page with a confirmation message
     res.render('forgot-password', { sent: true });
 });
 
 // Change Password form
-router.get('/reset/:userId/:token', (req, res) => {
-    res.render('change-password', { err: null, id: req.params.userId, token: req.params.token });
+router.get('/reset/:token', (req, res) => {
+    res.render('change-password', 
+        { err: null, confirm: false, token: req.params.token });
 });
 
 // Change Password POST request
-router.post('/reset/:userId/:token', async function (req, res) {
-    if (req.body.password !== req.body.passwordConfirm) {
-        res.render('change-password', { err: {message: 'Passwords do not match.'} });
+router.post('/reset/:token', async function (req, res) {
+    if (!req.body.password || req.body.password !== req.body.passwordConfirm) {
+        res.render('change-password', 
+            { err: {message: 'Passwords do not match.'}, 
+            confirm: false, token: req.params.token });
     }
-
-    // Find the user and compare tokens
-    let requester;
+    // Decode the token
+    let decoded;
     try {
-        requester = await Requester.findOne({ _id: req.params.userId }).exec()
+        decoded = jwt.verify(req.params.token, config.keys.jwtSecret);
     } 
     catch (err) {
-        res.status(404).json('Invalid user.')
+        console.log(err);
+        res.status(403).json('Token verification failed.');
     }
-    if (requester) {
-        const secret = requester.hash + '-' + requester.createdAt;
-        const payload = jwt.decode(req.params.token, secret);
-        if (payload.userId === requester.id) {
-            
-            // Set new password 
-            await requester.setPassword(req.body.password);
-            await requester.save();
+    // Find the user by ID stored in token
+    let requester;
+    try {
+        requester = await Requester.findOne({ _id: decoded.userId }).exec();
+    } 
+    catch (err) {
+        res.status(404).json('Invalid user.');
+    }
+    // Compare tokens
+    if (requester && requester.resetToken === req.params.token) {
+        // Set new password 
+        await requester.setPassword(req.body.password);
+        await requester.save();
 
-            // Login and redirect to tasks page
-            req.login(requester, function(err) {
-                if (err) { return next(err); }
-                return res.redirect('/reqtask');
-            });
-        }
+        // Remove the token from user's DB record
+        requester.updateOne({ resetToken: '' }, (err, successs) => {
+            if (err) {
+                res.status(404).json('Error resetting token.')
+            }
+        });
+
+        // Confirm password change
+        res.render('change-password', { err: null, confirm: true, token: '' });
+    }
+    else {
+        res.status(404).json('User not found, or the token is invalid.')
     }
 });
 

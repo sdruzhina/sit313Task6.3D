@@ -67,6 +67,10 @@ const requesterSchema = new mongoose.Schema(
         },  
         createdAt: {
             type: Date
+        },
+        resetToken: {
+            type: String,
+            required: false
         }
     }
 )
