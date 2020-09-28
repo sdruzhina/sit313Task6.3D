@@ -17,7 +17,7 @@ passport.use(
     new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID || config.google.clientID,
         clientSecret: process.env.GOOGLE_SECRET || config.google.clientSecret,
-        callbackURL: '/auth/google/redirect'
+        callbackURL: 'https://ancient-chamber-36974.herokuapp.com/auth/google/redirect'
     }, (accessToken, refreshToken, profile, done) => {
         // Check if user exists in DB
         Requester.findOne({googleId: profile.id})

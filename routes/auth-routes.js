@@ -110,7 +110,7 @@ router.post('/forgot', async function (req, res) {
     });
 
     // Password reset URL using user ID and token
-    const url = `http://localhost:8080/auth/reset/${token}`;
+    const url = `https://ancient-chamber-36974.herokuapp.com/auth/reset/${token}`;
 
     // Send the email
     mail.sendPasswordReset(requester.email, requester.firstName, url);
