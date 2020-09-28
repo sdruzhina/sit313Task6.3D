@@ -98,7 +98,7 @@ router.post('/forgot', async function (req, res) {
 
     // Create a JWT token using the constant secret
     const userId = requester._id;
-    const token = jwt.sign({ userId }, config.keys.jwtSecret, {
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET || config.keys.jwtSecret, {
         expiresIn: 1800 // 30 minutes
     });
 
@@ -135,7 +135,7 @@ router.post('/reset/:token', async function (req, res) {
     // Decode the token
     let decoded;
     try {
-        decoded = jwt.verify(req.params.token, config.keys.jwtSecret);
+        decoded = jwt.verify(req.params.token, process.env.JWT_SECRET || config.keys.jwtSecret);
     } 
     catch (err) {
         console.log(err);

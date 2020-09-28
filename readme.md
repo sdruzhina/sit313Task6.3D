@@ -1,3 +1,3 @@
-Task 6.1P
+Task 6.3D
 
-** Please add your own Mailchimp API key and list ID in config.js **
+API keys and variables can be added in config.js

@@ -21,7 +21,7 @@ const app = express()
 app.set('view engine', 'ejs');
 
 // MongoDB connection
-mongoose.connect(config.mongoDB.uri, 
+mongoose.connect(process.env.MONGO_URI || config.mongoDB.uri, 
     {useNewUrlParser: true, useUnifiedTopology: true})
 
 app.use(bodyParser.urlencoded({extended:true}));

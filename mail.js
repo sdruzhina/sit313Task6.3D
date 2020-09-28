@@ -1,6 +1,6 @@
 const config = require('./config');
 const mailgun = require('mailgun-js');
-const mg = mailgun({apiKey: config.mailgun.api_key, domain: config.mailgun.domain});
+const mg = mailgun({apiKey: process.env.MAILGUN_API_KEY || config.mailgun.api_key,  domain: process.env.MAILGUN_DOMAIN || config.mailgun.domain});
 
 module.exports = {
 
