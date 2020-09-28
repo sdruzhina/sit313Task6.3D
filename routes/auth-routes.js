@@ -9,43 +9,23 @@ const mail = require('../mail');
 
 // Login Form
 router.get('/login', (req, res) => {
-    res.render('reqlogin.ejs', { err: [], email: null });
+    res.render('reqlogin.ejs', { err: req.flash('error'), email: null });
 });
 
 // Requester local login
-router.post('/login', async function (req, res) {
-    const errors = {};
-    if (!req.body.email) {
-        errors.email = 'Please enter your email address';
-    }
-    else if (!req.body.password) {
-        errors.password = 'Please enter your password';
-    }
-    else {
-        // Get the user from DB
-        const requester = await Requester.findOne({ email: req.body.email.trim() }, 'email password').exec();
-            if (requester) {
-                // Check the "Save password" flag and save session to Mongo
-                if ( req.body.savePassword ) {
-                    // Set cookie to expire in 1 day
-                    req.session.cookie.originalMaxAge = 24 * 60 * 60 * 1000 
-                } 
-                else {
-                    req.session.cookie.expires = false
-                }
-                req.login(requester, function(err) {
-                    if (err) { return next(err); }
-                    return res.redirect('/reqtask');
-                });
-            }
-            else {
-                // No record found
-                errors.user = 'User not found';
-            }
-    }
-    if (Object.keys(errors).length != 0) {
-        res.render('reqlogin.ejs', { err: errors, email: req.body.email });
-    }
+router.post("/login", passport.authenticate('local', {
+        successRedirect: '/reqtask',
+        failureRedirect: '/auth/login',
+        failureFlash: true
+    }), function(req, res){
+        // Check the "Save password" flag and save session to Mongo
+        if ( req.body.savePassword ) {
+            // Set cookie to expire in 1 day
+            req.session.cookie.originalMaxAge = 24 * 60 * 60 * 1000 
+        } 
+        else {
+            req.session.cookie.expires = false
+        }
 });
 
 // Signup page

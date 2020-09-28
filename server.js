@@ -8,6 +8,7 @@ const passport = require('passport')
 const passportLocalMongoose = require('passport-local-mongoose');
 const passportGoogle = require('passport-google-oauth');
 const session = require('express-session');
+const flash = require('connect-flash');
 const MongoStore = require('connect-mongo')(session);
 
 // Routes and API
@@ -37,6 +38,7 @@ app.use(session({
         ttl: 2 * 60 * 60 // 2 hours
     })
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
